@@ -21,7 +21,7 @@ type Test = {
 const tests: Test[] = [
   {
     id: 1,
-    nerves: "I — Olfatório",
+    nerves: "Nervo",
     title: "Reconhecimento de odores",
     challenge:
       "Teste a capacidade de perceber e identificar odores, examinando cada narina separadamente.",
@@ -47,7 +47,7 @@ const tests: Test[] = [
   },
   {
     id: 2,
-    nerves: "II — Óptico",
+    nerves: "Nervo",
     title: "Acuidade visual",
     challenge: "Avalie a acuidade visual de cada olho separadamente.",
     procedure:
@@ -72,7 +72,7 @@ const tests: Test[] = [
   },
   {
     id: 3,
-    nerves: "II — Óptico",
+    nerves: "Nervo",
     title: "Campo visual por confrontação",
     challenge: "Compare o campo visual do paciente com o seu próprio campo visual.",
     procedure:
@@ -92,7 +92,7 @@ const tests: Test[] = [
   },
   {
     id: 4,
-    nerves: "III, IV e VI — Oculomotor, Troclear e Abducente",
+    nerves: "Nervos",
     title: "Motilidade extrínseca",
     challenge:
       "Avalie os movimentos oculares e procure alterações como estrabismo ou diplopia.",
@@ -118,7 +118,7 @@ const tests: Test[] = [
   },
   {
     id: 5,
-    nerves: "III, IV e VI — Oculomotor, Troclear e Abducente",
+    nerves: "Nervos",
     title: "Pupilas e motilidade intrínseca",
     challenge: "Avalie as pupilas diante da luz e durante a acomodação.",
     procedure:
@@ -143,7 +143,7 @@ const tests: Test[] = [
   },
   {
     id: 6,
-    nerves: "V — Trigêmeo",
+    nerves: "Nervo",
     title: "Reflexo córneo-palpebral",
     challenge: "Avalie a integridade do reflexo córneo-palpebral.",
     procedure:
@@ -168,7 +168,7 @@ const tests: Test[] = [
   },
   {
     id: 7,
-    nerves: "V — Trigêmeo",
+    nerves: "Nervo",
     title: "Músculos da mastigação",
     challenge: "Avalie força e simetria dos músculos da mastigação.",
     procedure:
@@ -193,7 +193,7 @@ const tests: Test[] = [
   },
   {
     id: 8,
-    nerves: "VII — Facial",
+    nerves: "Nervo",
     title: "Movimentos da face",
     challenge: "Avalie a motricidade dos músculos da expressão facial.",
     procedure:
@@ -218,7 +218,7 @@ const tests: Test[] = [
   },
   {
     id: 9,
-    nerves: "VII — Facial",
+    nerves: "Nervo",
     title: "Gustação",
     challenge: "Avalie a percepção dos sabores na região anterior da língua.",
     procedure:
@@ -243,7 +243,7 @@ const tests: Test[] = [
   },
   {
     id: 10,
-    nerves: "VIII — Vestibulococlear",
+    nerves: "Nervo",
     title: "Avaliação auditiva",
     challenge: "Faça uma avaliação clínica inicial da audição.",
     procedure:
@@ -268,7 +268,7 @@ const tests: Test[] = [
   },
   {
     id: 11,
-    nerves: "VIII — Vestibulococlear",
+    nerves: "Nervo",
     title: "Impulso da cabeça",
     challenge: "Avalie a resposta vestibular diante de movimentos rápidos da cabeça.",
     procedure:
@@ -288,7 +288,7 @@ const tests: Test[] = [
   },
   {
     id: 12,
-    nerves: "VIII — Vestibulococlear",
+    nerves: "Nervo",
     title: "Manobra de Dix-Hallpike",
     challenge: "Avalie vertigem e nistagmo desencadeados por mudança de posição.",
     procedure:
@@ -308,7 +308,7 @@ const tests: Test[] = [
   },
   {
     id: 13,
-    nerves: "IX e X — Glossofaríngeo e Vago",
+    nerves: "Nervo",
     title: "Motricidade do palato e úvula",
     challenge: "Avalie o movimento do palato durante a fonação.",
     procedure:
@@ -333,7 +333,7 @@ const tests: Test[] = [
   },
   {
     id: 14,
-    nerves: "IX e X — Glossofaríngeo e Vago",
+    nerves: "Nervo",
     title: "Sensibilidade da faringe",
     challenge: "Avalie a sensibilidade da região faríngea.",
     procedure:
@@ -358,7 +358,7 @@ const tests: Test[] = [
   },
   {
     id: 15,
-    nerves: "XI — Acessório",
+    nerves: "Nervo",
     title: "Trapézio",
     challenge: "Avalie a força do músculo trapézio.",
     procedure:
@@ -383,7 +383,7 @@ const tests: Test[] = [
   },
   {
     id: 16,
-    nerves: "XI — Acessório",
+    nerves: "Nervo",
     title: "Esternocleidomastóideo",
     challenge: "Avalie a força do esternocleidomastóideo.",
     procedure:
@@ -403,7 +403,7 @@ const tests: Test[] = [
   },
   {
     id: 17,
-    nerves: "XII — Hipoglosso",
+    nerves: "Nervo",
     title: "Movimentação da língua",
     challenge: "Avalie a motricidade e a simetria da língua.",
     procedure:
