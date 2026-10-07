@@ -1,2104 +1,1623 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Questao = {
-  pergunta: string;
-  alternativas: string[];
-  resposta: number;
-  explicacao: string;
+type Question = {
+  q: string;
+  a: string[];
+  correct: number;
 };
 
-type Teste = {
-  nervo: string;
-  titulo: string;
-  desafio: string;
-  observacao?: string;
-  comoFazer: string[];
-  perguntas: Questao[];
+type Test = {
+  id: number;
+  nerves: string;
+  title: string;
+  challenge: string;
+  procedure: string;
+  questions: Question[];
 };
 
-const TESTES: Teste[] = [
+const tests: Test[] = [
   {
-    nervo: "I — Nervo Olfatório",
-    titulo: "Reconhecimento de odores",
-    desafio:
-      "Avalie a capacidade do paciente de perceber e identificar diferentes odores, examinando cada narina separadamente.",
-    observacao:
-      "Utilize substâncias conhecidas, como café, canela, hortelã, tabaco ou baunilha.",
-    comoFazer: [
-      "Peça ao paciente para fechar os olhos.",
-      "Oclua uma narina e mantenha a outra livre.",
-      "Apresente uma substância conhecida próxima à narina livre.",
-      "Pergunte se o paciente percebe algum odor.",
-      "Pergunte se consegue identificar o odor e se o considera agradável ou desagradável.",
-      "Repita o procedimento na outra narina.",
-      "Na suspeita de alteração unilateral, iniciar pelo lado afetado.",
-    ],
-    perguntas: [
+    id: 1,
+    nerves: "I — Olfatório",
+    title: "Reconhecimento de odores",
+    challenge:
+      "Teste a capacidade de perceber e identificar odores, examinando cada narina separadamente.",
+    procedure:
+      "Com os olhos fechados, oclua uma narina e apresente uma substância conhecida, como café, canela, hortelã, tabaco ou baunilha. Pergunte se o paciente sente e identifica o odor. Repita na outra narina.",
+    questions: [
       {
-        pergunta: "Como é denominada a perda total do olfato?",
-        alternativas: ["Hiposmia", "Anosmia", "Parosmia", "Disosmia"],
-        resposta: 1,
-        explicacao:
-          "Anosmia corresponde à perda total da capacidade de perceber odores.",
-      },
-      {
-        pergunta:
-          "Como é denominada a alteração na percepção de um odor, como perceber baunilha como desagradável?",
-        alternativas: ["Anosmia", "Hiposmia", "Parosmia", "Amaurose"],
-        resposta: 2,
-        explicacao:
-          "Parosmia corresponde à alteração da percepção dos odores.",
-      },
-      {
-        pergunta: "O exame deve ser realizado com qual condição?",
-        alternativas: [
-          "Os dois olhos abertos e as duas narinas livres",
-          "Olhos fechados e cada narina examinada separadamente",
-          "Somente com a narina direita",
-          "Somente com a narina esquerda",
+        q: "Como deve ser feita a avaliação do olfato?",
+        a: [
+          "Com as duas narinas juntas.",
+          "Com cada narina separadamente e olhos fechados.",
+          "Somente pela narina direita.",
+          "Com os olhos abertos.",
         ],
-        resposta: 1,
-        explicacao:
-          "O paciente deve permanecer com os olhos fechados e cada narina deve ser testada separadamente.",
+        correct: 1,
+      },
+      {
+        q: "Qual termo indica perda total do olfato?",
+        a: ["Hiposmia", "Parosmia", "Anosmia", "Amaurose"],
+        correct: 2,
       },
     ],
   },
-
   {
-    nervo: "II — Nervo Óptico",
-    titulo: "Acuidade visual",
-    desafio:
-      "Avalie a capacidade visual do paciente, examinando cada olho individualmente.",
-    observacao:
-      "Pode ser utilizada a tabela de Snellen ou, em uma avaliação mais simples, textos ou objetos posicionados a aproximadamente 35–40 cm.",
-    comoFazer: [
-      "Examine um olho por vez.",
-      "Peça ao paciente para ocluir o olho que não será examinado.",
-      "Utilize a tabela de Snellen ou outro recurso disponível.",
-      "Solicite que o paciente identifique os optótipos ou leia o texto apresentado.",
-      "Repita o procedimento no olho contralateral.",
-      "Compare o desempenho dos dois olhos.",
-    ],
-    perguntas: [
+    id: 2,
+    nerves: "II — Óptico",
+    title: "Acuidade visual",
+    challenge: "Avalie a acuidade visual de cada olho separadamente.",
+    procedure:
+      "Utilize a tabela de Snellen ou peça ao paciente para identificar letras, objetos ou texto a aproximadamente 35–40 cm. Examine cada olho separadamente.",
+    questions: [
       {
-        pergunta:
-          "Qual estrutura é avaliada principalmente no teste de acuidade visual?",
-        alternativas: [
-          "Nervo óptico",
-          "Nervo facial",
-          "Nervo trigêmeo",
-          "Nervo vestibulococlear",
+        q: "Como a acuidade visual deve ser examinada?",
+        a: [
+          "Com os dois olhos juntos.",
+          "Com cada olho separadamente.",
+          "Somente com o olho dominante.",
+          "Somente no escuro.",
         ],
-        resposta: 0,
-        explicacao:
-          "A acuidade visual é uma das funções avaliadas do II par craniano, o nervo óptico.",
+        correct: 1,
       },
       {
-        pergunta:
-          "Como deve ser realizada a avaliação da acuidade visual?",
-        alternativas: [
-          "Sempre com os dois olhos simultaneamente",
-          "Somente com o olho dominante",
-          "Cada olho deve ser examinado separadamente",
-          "Somente com os olhos fechados",
-        ],
-        resposta: 2,
-        explicacao:
-          "Cada olho deve ser examinado individualmente para permitir comparação entre os lados.",
-      },
-      {
-        pergunta: "Como é denominada a perda completa da visão?",
-        alternativas: ["Hiposmia", "Amaurose", "Diplopia", "Parosmia"],
-        resposta: 1,
-        explicacao:
-          "Amaurose corresponde à perda abolida da visão.",
+        q: "Qual recurso pode ser utilizado?",
+        a: ["Tabela de Snellen", "Dix-Hallpike", "Reflexo fotomotor", "Abaixador de língua"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "II — Nervo Óptico",
-    titulo: "Campo visual por confrontação",
-    desafio:
-      "Avalie os campos visuais do paciente por meio da comparação com o campo visual do examinador.",
-    comoFazer: [
-      "Posicione o paciente a aproximadamente 60 cm do examinador.",
-      "Paciente e examinador devem manter os olhos na mesma altura.",
-      "Peça ao paciente para ocluir um olho.",
-      "O examinador deve ocluir o olho oposto.",
-      "Peça ao paciente para olhar fixamente para o nariz do examinador.",
-      "Mova o dedo lentamente a partir das regiões periféricas.",
-      "Teste os quatro quadrantes do campo visual.",
-      "Compare a percepção do paciente com a percepção do examinador.",
-    ],
-    perguntas: [
+    id: 3,
+    nerves: "II — Óptico",
+    title: "Campo visual por confrontação",
+    challenge: "Compare o campo visual do paciente com o seu próprio campo visual.",
+    procedure:
+      "Posicione-se a cerca de 60 cm. O paciente fecha um olho e você fecha o olho oposto. Peça para olhar para seu nariz e movimente o dedo pelos quatro quadrantes, comparando a percepção.",
+    questions: [
       {
-        pergunta:
-          "Durante o teste de confrontação, para onde o paciente deve direcionar o olhar?",
-        alternativas: [
-          "Para o próprio dedo",
-          "Para o nariz do examinador",
-          "Para o teto",
-          "Para o lado examinado",
-        ],
-        resposta: 1,
-        explicacao:
-          "O paciente deve manter o olhar fixo no nariz do examinador enquanto o estímulo é movimentado perifericamente.",
+        q: "Para onde o paciente deve olhar durante a confrontação?",
+        a: ["Para o dedo.", "Para o teto.", "Para o nariz do examinador.", "Para os próprios pés."],
+        correct: 2,
       },
       {
-        pergunta: "Quantos quadrantes devem ser avaliados?",
-        alternativas: ["Dois", "Três", "Quatro", "Seis"],
-        resposta: 2,
-        explicacao:
-          "O campo visual é confrontado nos quatro quadrantes.",
-      },
-      {
-        pergunta:
-          "O que deve ser feito com os olhos durante a comparação?",
-        alternativas: [
-          "Paciente fecha os dois olhos",
-          "Paciente e examinador mantêm os dois olhos abertos",
-          "Paciente fecha um olho e o examinador fecha o olho oposto",
-          "Somente o examinador fecha um olho",
-        ],
-        resposta: 2,
-        explicacao:
-          "A técnica compara os campos visuais correspondentes, com um olho ocluído em cada participante.",
+        q: "Quantos quadrantes devem ser testados?",
+        a: ["Dois", "Três", "Quatro", "Seis"],
+        correct: 2,
       },
     ],
   },
-
   {
-    nervo: "III, IV e VI — Oculomotor, Troclear e Abducente",
-    titulo: "Motilidade ocular extrínseca",
-    desafio:
-      "Avalie os movimentos oculares coordenados pelos músculos inervados pelos nervos III, IV e VI.",
-    observacao:
-      "Esses três nervos são examinados conjuntamente porque participam da motilidade extrínseca dos olhos.",
-    comoFazer: [
-      "Mantenha a cabeça do paciente imóvel.",
-      "Peça ao paciente para acompanhar o objeto apenas com os olhos.",
-      "Movimente o objeto horizontalmente para os dois lados.",
-      "Depois, movimente-o verticalmente.",
-      "Observe se há limitação dos movimentos.",
-      "Observe a presença de estrabismo.",
-      "Pergunte se o paciente apresenta diplopia.",
-      "Teste a convergência aproximando o objeto dos olhos.",
-    ],
-    perguntas: [
+    id: 4,
+    nerves: "III, IV e VI — Oculomotor, Troclear e Abducente",
+    title: "Motilidade extrínseca",
+    challenge:
+      "Avalie os movimentos oculares e procure alterações como estrabismo ou diplopia.",
+    procedure:
+      "Mantenha a cabeça parada e peça ao paciente que acompanhe um objeto apenas com os olhos, realizando movimentos horizontais e verticais. Examine cada olho e depois os dois simultaneamente. Teste a convergência.",
+    questions: [
       {
-        pergunta:
-          "Qual músculo é inervado pelo VI nervo craniano?",
-        alternativas: [
-          "Reto medial",
-          "Reto lateral",
-          "Reto superior",
-          "Oblíquo superior",
+        q: "Por que III, IV e VI são examinados em conjunto?",
+        a: [
+          "Controlam a audição.",
+          "Participam dos movimentos dos olhos.",
+          "Controlam a língua.",
+          "Controlam a mastigação.",
         ],
-        resposta: 1,
-        explicacao:
-          "O VI par craniano, nervo abducente, inerva o músculo reto lateral.",
+        correct: 1,
       },
       {
-        pergunta:
-          "Qual músculo é inervado pelo IV nervo craniano?",
-        alternativas: [
-          "Reto lateral",
-          "Reto medial",
-          "Oblíquo superior",
-          "Oblíquo inferior",
-        ],
-        resposta: 2,
-        explicacao:
-          "O IV par craniano, nervo troclear, inerva o músculo oblíquo superior.",
-      },
-      {
-        pergunta:
-          "Qual é uma queixa comum quando existe alteração da motilidade ocular?",
-        alternativas: ["Anosmia", "Diplopia", "Disfagia", "Anacusia"],
-        resposta: 1,
-        explicacao:
-          "A diplopia é uma queixa inicial frequente nas alterações da motilidade ocular.",
+        q: "O que deve permanecer parado durante o teste?",
+        a: ["A cabeça", "A língua", "A mandíbula", "O tronco inteiro"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "III, IV e VI — Oculomotor, Troclear e Abducente",
-    titulo: "Motilidade ocular intrínseca e reflexos pupilares",
-    desafio:
-      "Avalie a resposta das pupilas à luz e à acomodação.",
-    comoFazer: [
-      "Observe o tamanho e a simetria das pupilas.",
-      "Ilumine uma pupila e observe sua constrição.",
-      "Observe também a resposta da pupila contralateral.",
-      "Repita o procedimento do outro lado.",
-      "Avalie o reflexo fotomotor direto.",
-      "Avalie o reflexo consensual.",
-      "Se necessário, avalie também a acomodação.",
-    ],
-    perguntas: [
+    id: 5,
+    nerves: "III, IV e VI — Oculomotor, Troclear e Abducente",
+    title: "Pupilas e motilidade intrínseca",
+    challenge: "Avalie as pupilas diante da luz e durante a acomodação.",
+    procedure:
+      "Observe tamanho e simetria. Teste o reflexo fotomotor direto, o consensual e a acomodação, observando a resposta das pupilas.",
+    questions: [
       {
-        pergunta:
-          "O que acontece no reflexo fotomotor direto normal?",
-        alternativas: [
-          "Dilatação da pupila iluminada",
-          "Constrição da pupila iluminada",
-          "Movimento lateral do olho",
-          "Fechamento da pálpebra",
+        q: "O reflexo fotomotor direto provoca:",
+        a: [
+          "Dilatação da pupila iluminada.",
+          "Constrição da pupila iluminada.",
+          "Movimento da língua.",
+          "Fechamento da boca.",
         ],
-        resposta: 1,
-        explicacao:
-          "A luz incidindo sobre a retina provoca constrição da pupila iluminada.",
+        correct: 1,
       },
       {
-        pergunta:
-          "O que caracteriza o reflexo consensual?",
-        alternativas: [
-          "Constrição apenas da pupila iluminada",
-          "Constrição da pupila contralateral",
-          "Dilatação de ambas as pupilas",
-          "Fechamento de ambos os olhos",
-        ],
-        resposta: 1,
-        explicacao:
-          "A iluminação de um olho provoca também constrição da pupila contralateral.",
-      },
-      {
-        pergunta:
-          "Qual dos seguintes nervos participa diretamente do controle da motilidade ocular?",
-        alternativas: ["III", "VIII", "IX", "XII"],
-        resposta: 0,
-        explicacao:
-          "O III nervo craniano, junto com IV e VI, participa da motilidade ocular.",
+        q: "Qual outra resposta pupilar deve ser observada?",
+        a: ["Consensual", "Patelar", "Aquileu", "Plantar"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "V — Nervo Trigêmeo",
-    titulo: "Reflexo córneo-palpebral",
-    desafio:
-      "Avalie o reflexo córneo-palpebral utilizando estímulo delicado da córnea.",
-    observacao:
-      "O reflexo envolve aferência pelo trigêmeo e resposta motora pelo facial.",
-    comoFazer: [
-      "Peça ao paciente para olhar para o lado oposto ao que será estimulado.",
-      "Aproxime cuidadosamente um pequeno pedaço de algodão.",
-      "Toque delicadamente a córnea.",
-      "Observe o fechamento palpebral.",
-      "Repita no lado contralateral.",
-      "Compare as respostas.",
-    ],
-    perguntas: [
+    id: 6,
+    nerves: "V — Trigêmeo",
+    title: "Reflexo córneo-palpebral",
+    challenge: "Avalie a integridade do reflexo córneo-palpebral.",
+    procedure:
+      "Peça ao paciente para olhar para o lado. Com algodão, toque delicadamente a córnea e observe o fechamento palpebral. Compare os dois lados.",
+    questions: [
       {
-        pergunta:
-          "Qual nervo fornece a principal aferência sensitiva do reflexo córneo-palpebral?",
-        alternativas: [
-          "Trigêmeo",
-          "Facial",
-          "Glossofaríngeo",
-          "Vago",
-        ],
-        resposta: 0,
-        explicacao:
-          "A aferência sensitiva do reflexo córneo-palpebral é conduzida pelo nervo trigêmeo.",
+        q: "Qual reflexo é avaliado?",
+        a: ["Fotomotor", "Córneo-palpebral", "Patelar", "Plantar"],
+        correct: 1,
       },
       {
-        pergunta:
-          "Qual resposta deve ser observada durante o reflexo córneo-palpebral?",
-        alternativas: [
-          "Abertura dos olhos",
-          "Fechamento palpebral",
-          "Dilatação pupilar",
-          "Desvio da língua",
+        q: "Uma lesão trigeminal unilateral pode causar:",
+        a: [
+          "Ausência de resposta ao estímulo da córnea afetada.",
+          "Aumento da audição.",
+          "Dilatação obrigatória da pupila.",
+          "Desvio da língua.",
         ],
-        resposta: 1,
-        explicacao:
-          "O estímulo corneano normalmente provoca fechamento das pálpebras.",
-      },
-      {
-        pergunta:
-          "Em uma lesão unilateral do trigêmeo, o que pode ocorrer ao estimular a córnea do lado afetado?",
-        alternativas: [
-          "Resposta normal obrigatoriamente",
-          "Ausência da resposta do lado afetado",
-          "Somente dilatação pupilar",
-          "Desvio da mandíbula",
-        ],
-        resposta: 1,
-        explicacao:
-          "Na lesão trigeminal unilateral, o estímulo no lado afetado pode não desencadear o reflexo.",
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "V — Nervo Trigêmeo",
-    titulo: "Músculos da mastigação",
-    desafio:
-      "Avalie a função motora do trigêmeo por meio da musculatura responsável pela mastigação.",
-    comoFazer: [
-      "Peça ao paciente para cerrar os dentes com força.",
-      "Palpe os músculos masseter e temporal.",
-      "Compare a contração dos dois lados.",
-      "Observe assimetrias.",
-      "Peça ao paciente para abrir a boca.",
-      "Observe eventual desvio da mandíbula.",
-      "Se necessário, utilize um abaixador de língua para testar a força de mordida.",
-    ],
-    perguntas: [
+    id: 7,
+    nerves: "V — Trigêmeo",
+    title: "Músculos da mastigação",
+    challenge: "Avalie força e simetria dos músculos da mastigação.",
+    procedure:
+      "Peça ao paciente para cerrar os dentes com força e palpe masseter e temporal, comparando os lados. Observe a abertura da boca e a movimentação mandibular.",
+    questions: [
       {
-        pergunta:
-          "Quais músculos devem ser palpados durante a avaliação da mastigação?",
-        alternativas: [
+        q: "Quais músculos devem ser palpados?",
+        a: [
           "Masseter e temporal",
-          "Trapézio e esternocleidomastóideo",
-          "Frontal e orbicular",
-          "Reto lateral e medial",
+          "Trapézio e deltoide",
+          "Bíceps e tríceps",
+          "Esternocleidomastóideo e trapézio",
         ],
-        resposta: 0,
-        explicacao:
-          "Masseter e temporal são importantes músculos da mastigação avaliados no exame do trigêmeo.",
+        correct: 0,
       },
       {
-        pergunta:
-          "Em uma lesão unilateral, para qual lado a mandíbula tende a desviar durante a abertura da boca?",
-        alternativas: [
-          "Para o lado saudável",
-          "Para o lado da lesão",
-          "Sempre para a direita",
-          "Sempre para a esquerda",
-        ],
-        resposta: 1,
-        explicacao:
-          "Na lesão unilateral do trigêmeo, a mandíbula tende a desviar para o lado da lesão.",
-      },
-      {
-        pergunta:
-          "O trigêmeo possui componentes:",
-        alternativas: [
-          "Somente motores",
-          "Somente sensitivos",
-          "Sensitivos e motores",
-          "Somente autonômicos",
-        ],
-        resposta: 2,
-        explicacao:
-          "O nervo trigêmeo apresenta componentes sensitivos e motores.",
+        q: "O que deve ser observado ao abrir a boca?",
+        a: ["Desvio da mandíbula", "Movimento dos olhos", "Resposta pupilar", "Posição dos ombros"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "VII — Nervo Facial",
-    titulo: "Movimentos da face",
-    desafio:
-      "Avalie a motricidade dos músculos da expressão facial, observando possíveis assimetrias.",
-    comoFazer: [
-      "Observe o rosto em repouso.",
-      "Peça ao paciente para sorrir.",
-      "Peça para mostrar os dentes.",
-      "Peça para franzir a testa.",
-      "Peça para fechar os olhos com força.",
-      "Observe a simetria das pregas nasolabiais.",
-      "Observe a largura das fissuras palpebrais.",
-    ],
-    perguntas: [
+    id: 8,
+    nerves: "VII — Facial",
+    title: "Movimentos da face",
+    challenge: "Avalie a motricidade dos músculos da expressão facial.",
+    procedure:
+      "Observe a face em repouso e durante a conversa. Peça para sorrir, mostrar os dentes e fazer uma careta. Compare os dois lados, observando sulco nasolabial e fissura palpebral.",
+    questions: [
       {
-        pergunta:
-          "Qual nervo craniano é responsável pela motricidade dos músculos da expressão facial?",
-        alternativas: [
-          "V",
-          "VII",
-          "IX",
-          "XII",
+        q: "Como uma fraqueza facial pode ser percebida?",
+        a: [
+          "Pela assimetria no sorriso ou careta.",
+          "Pelo campo visual.",
+          "Pela Dix-Hallpike.",
+          "Pela audição.",
         ],
-        resposta: 1,
-        explicacao:
-          "O VII nervo craniano, nervo facial, participa da motricidade da expressão facial.",
+        correct: 0,
       },
       {
-        pergunta:
-          "Em uma fraqueza facial periférica, o que pode ser observado no lado afetado?",
-        alternativas: [
-          "Aumento da prega nasolabial",
-          "Aprofundamento da prega nasolabial e aumento da fissura palpebral",
-          "Desvio da língua",
-          "Perda da audição",
-        ],
-        resposta: 1,
-        explicacao:
-          "O lado afetado pode apresentar aprofundamento da prega nasolabial e alargamento da fissura palpebral.",
-      },
-      {
-        pergunta:
-          "Na fraqueza facial central descrita na fonte, quais movimentos podem permanecer preservados?",
-        alternativas: [
-          "Somente movimentos da língua",
-          "Franzir a testa e fechar os olhos",
-          "Somente mastigação",
-          "Somente movimentos oculares",
-        ],
-        resposta: 1,
-        explicacao:
-          "Na fraqueza facial central, a fonte descreve preservação do enrugamento da testa e do fechamento palpebral.",
+        q: "Qual estrutura pode apresentar alteração de simetria?",
+        a: ["Sulco nasolabial", "Patela", "Tíbia", "Punho"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "VII — Nervo Facial",
-    titulo: "Gustação dos dois terços anteriores da língua",
-    desafio:
-      "Avalie a percepção dos sabores nos dois lados dos dois terços anteriores da língua.",
-    comoFazer: [
-      "Explique o procedimento ao paciente.",
-      "Utilize soluções de sabores conhecidos.",
-      "Teste os lados direito e esquerdo.",
-      "Podem ser utilizados sabores doce, azedo, salgado e amargo.",
-      "Solicite que o paciente identifique o sabor.",
-      "Compare os dois lados.",
-    ],
-    perguntas: [
+    id: 9,
+    nerves: "VII — Facial",
+    title: "Gustação",
+    challenge: "Avalie a percepção dos sabores na região anterior da língua.",
+    procedure:
+      "Utilize soluções doce, azeda, salgada ou amarga e teste os dois lados da porção anterior da língua, evitando que o paciente veja a substância.",
+    questions: [
       {
-        pergunta:
-          "Qual região da língua é avaliada nesse teste relacionado ao nervo facial?",
-        alternativas: [
-          "Terço posterior",
-          "Dois terços anteriores",
-          "Somente a ponta",
-          "Toda a língua obrigatoriamente",
-        ],
-        resposta: 1,
-        explicacao:
-          "A fonte descreve a avaliação da gustação nos dois terços anteriores da língua.",
+        q: "Qual região da língua é testada para a gustação relacionada ao VII?",
+        a: ["Porção anterior", "Somente a raiz", "Somente o dorso posterior", "Apenas a face inferior"],
+        correct: 0,
       },
       {
-        pergunta:
-          "Quais sabores podem ser utilizados na avaliação?",
-        alternativas: [
+        q: "Quais sabores podem ser utilizados?",
+        a: [
           "Somente doce",
-          "Somente salgado",
           "Doce, azedo, salgado e amargo",
-          "Somente amargo",
+          "Somente salgado",
+          "Somente ácido",
         ],
-        resposta: 2,
-        explicacao:
-          "A fonte cita soluções doce, azeda, salgada e amarga.",
-      },
-      {
-        pergunta:
-          "Por que os dois lados devem ser testados?",
-        alternativas: [
-          "Para comparar a função entre os lados",
-          "Porque o sabor só existe de um lado",
-          "Para avaliar apenas o nervo óptico",
-          "Para avaliar o campo visual",
-        ],
-        resposta: 0,
-        explicacao:
-          "A comparação bilateral permite identificar assimetrias na percepção gustativa.",
+        correct: 1,
       },
     ],
   },
-
   {
-    nervo: "VIII — Nervo Vestibulococlear",
-    titulo: "Avaliação auditiva",
-    desafio:
-      "Realize uma avaliação clínica inicial da audição, comparando a percepção dos sons entre os dois ouvidos.",
-    comoFazer: [
-      "Produza um som de baixa intensidade próximo a uma das orelhas.",
-      "Evite que o paciente veja a fonte do som.",
-      "Teste um ouvido e depois o outro.",
-      "Pode ser utilizado o som de um relógio ou diapasão.",
-      "Pergunte se o paciente percebe o som.",
-      "Compare a audição do paciente com a do examinador quando apropriado.",
-    ],
-    perguntas: [
+    id: 10,
+    nerves: "VIII — Vestibulococlear",
+    title: "Avaliação auditiva",
+    challenge: "Faça uma avaliação clínica inicial da audição.",
+    procedure:
+      "Produza um som de baixa intensidade próximo a cada ouvido, alternadamente, usando por exemplo relógio ou diapasão. Compare a percepção do paciente com a sua.",
+    questions: [
       {
-        pergunta:
-          "Qual raiz do VIII nervo está relacionada principalmente à audição?",
-        alternativas: [
-          "Coclear",
-          "Vestibular",
-          "Motora",
-          "Facial",
-        ],
-        resposta: 0,
-        explicacao:
-          "O VIII nervo possui uma raiz coclear relacionada à audição.",
+        q: "A raiz coclear do VIII está relacionada principalmente à:",
+        a: ["Audição", "Mastigação", "Expressão facial", "Movimentação da língua"],
+        correct: 0,
       },
       {
-        pergunta:
-          "Qual raiz do VIII nervo está relacionada ao equilíbrio?",
-        alternativas: [
-          "Coclear",
-          "Vestibular",
-          "Trigeminal",
-          "Olfatória",
+        q: "Como pode ser feita uma avaliação inicial?",
+        a: [
+          "Sons próximos a cada ouvido alternadamente",
+          "Luz nas pupilas",
+          "Sorriso",
+          "Elevação dos ombros",
         ],
-        resposta: 1,
-        explicacao:
-          "A raiz vestibular está relacionada ao equilíbrio.",
-      },
-      {
-        pergunta:
-          "Qual síndrome é descrita na fonte com zumbido, vertigem, desequilíbrio, náuseas/vômitos e hipoacusia progressiva?",
-        alternativas: [
-          "Síndrome de Ménière",
-          "Síndrome de Horner",
-          "Síndrome piramidal",
-          "Síndrome cerebelar",
-        ],
-        resposta: 0,
-        explicacao:
-          "A fonte relaciona esse conjunto de manifestações à síndrome de Ménière.",
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "VIII — Nervo Vestibulococlear",
-    titulo: "Impulso/compressão da cabeça",
-    desafio:
-      "Avalie a resposta vestibular utilizando movimentos rápidos da cabeça enquanto o paciente mantém a fixação visual.",
-    comoFazer: [
-      "Sente o paciente confortavelmente.",
-      "Peça que mantenha o olhar fixo em um objeto ou no nariz do examinador.",
-      "Segure a cabeça do paciente.",
-      "Realize rapidamente uma rotação aproximada de 20° para um lado.",
-      "Retorne à posição inicial.",
-      "Repita para o lado oposto.",
-      "Observe a manutenção da fixação visual e eventuais alterações.",
-    ],
-    perguntas: [
+    id: 11,
+    nerves: "VIII — Vestibulococlear",
+    title: "Impulso da cabeça",
+    challenge: "Avalie a resposta vestibular diante de movimentos rápidos da cabeça.",
+    procedure:
+      "Com o paciente sentado e olhando para um ponto fixo, segure a cabeça e faça rapidamente pequenos movimentos de aproximadamente 20° para direita e esquerda, observando os olhos.",
+    questions: [
       {
-        pergunta:
-          "Durante o teste, o paciente deve manter o olhar fixo em:",
-        alternativas: [
-          "Um objeto ou no nariz do examinador",
-          "O próprio ombro",
-          "O teto",
-          "Os próprios pés",
-        ],
-        resposta: 0,
-        explicacao:
-          "A fixação visual é mantida enquanto a cabeça é movimentada.",
+        q: "O que o teste de impulso da cabeça avalia?",
+        a: ["Resposta vestibular", "Força da língua", "Reflexo pupilar", "Sensibilidade facial"],
+        correct: 0,
       },
       {
-        pergunta:
-          "Qual sistema é especialmente avaliado nesse tipo de manobra?",
-        alternativas: [
-          "Vestibular",
-          "Olfatório",
-          "Gustativo",
-          "Motor da língua",
-        ],
-        resposta: 0,
-        explicacao:
-          "A manobra avalia aspectos relacionados ao sistema vestibular.",
-      },
-      {
-        pergunta:
-          "A rotação rápida descrita na fonte é aproximadamente de:",
-        alternativas: ["5°", "10°", "20°", "90°"],
-        resposta: 2,
-        explicacao:
-          "A fonte descreve uma rotação rápida da cabeça de aproximadamente 20° para cada lado.",
+        q: "Durante o teste, o paciente deve:",
+        a: ["Manter o olhar fixo", "Fechar os olhos", "Olhar para os pés", "Olhar para trás"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "VIII — Nervo Vestibulococlear",
-    titulo: "Manobra de Dix-Hallpike",
-    desafio:
-      "Avalie a presença de vertigem e nistagmo associados ao posicionamento da cabeça.",
-    comoFazer: [
-      "Mantenha o paciente sentado inicialmente.",
-      "Posicione a cabeça rodada aproximadamente 45° para um lado.",
-      "Rapidamente leve o paciente à posição supina.",
-      "Mantenha a cabeça estendida aproximadamente 45° abaixo da horizontal.",
-      "Observe a presença de vertigem.",
-      "Observe a direção e a duração do nistagmo.",
-      "Retorne o paciente à posição inicial.",
-      "Repita para o lado oposto.",
-    ],
-    perguntas: [
+    id: 12,
+    nerves: "VIII — Vestibulococlear",
+    title: "Manobra de Dix-Hallpike",
+    challenge: "Avalie vertigem e nistagmo desencadeados por mudança de posição.",
+    procedure:
+      "Com o paciente sentado, leve-o rapidamente para a posição supina, com a cabeça estendida cerca de 45° abaixo da horizontal e rodada 45° para um lado. Observe nistagmo e vertigem e repita no lado oposto.",
+    questions: [
       {
-        pergunta:
-          "Qual manifestação deve ser observada durante a manobra?",
-        alternativas: [
-          "Vertigem e nistagmo",
-          "Somente anosmia",
-          "Somente perda gustativa",
-          "Somente ptose",
-        ],
-        resposta: 0,
-        explicacao:
-          "A manobra permite observar vertigem e nistagmo relacionados ao posicionamento.",
+        q: "Qual manobra é usada para investigar vertigem posicional?",
+        a: ["Dix-Hallpike", "Snellen", "Confrontação", "Fotomotor"],
+        correct: 0,
       },
       {
-        pergunta:
-          "A cabeça é rodada aproximadamente quantos graus para o lado?",
-        alternativas: ["15°", "30°", "45°", "90°"],
-        resposta: 2,
-        explicacao:
-          "A fonte descreve rotação da cabeça de aproximadamente 45°.",
-      },
-      {
-        pergunta:
-          "A manobra deve ser repetida no lado oposto?",
-        alternativas: [
-          "Não",
-          "Somente em pacientes jovens",
-          "Sim",
-          "Somente se não houver sintomas",
-        ],
-        resposta: 2,
-        explicacao:
-          "A fonte orienta repetir a manobra para o lado oposto.",
+        q: "O que deve ser observado?",
+        a: ["Nistagmo e vertigem", "Somente força muscular", "Somente audição", "Somente pupila"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "IX e X — Glossofaríngeo e Vago",
-    titulo: "Motricidade do palato",
-    desafio:
-      "Observe a elevação do palato e o comportamento da úvula durante a emissão de um som.",
-    comoFazer: [
-      "Peça ao paciente para abrir a boca.",
-      "Solicite que diga “Ah!” ou “Eh!” e mantenha o som.",
-      "Observe a contração e elevação do palato.",
-      "Observe a posição da úvula.",
-      "Compare os dois lados.",
-      "Observe alterações na voz.",
-    ],
-    observacao:
-      "A fonte descreve alterações como voz nasal ou bitonal e dificuldade na elevação do palato em determinadas lesões.",
-    perguntas: [
+    id: 13,
+    nerves: "IX e X — Glossofaríngeo e Vago",
+    title: "Motricidade do palato e úvula",
+    challenge: "Avalie o movimento do palato durante a fonação.",
+    procedure:
+      "Peça ao paciente para abrir a boca e dizer “Ah!” ou “Eh!”, mantendo o som por alguns segundos. Observe a contração e elevação do palato e a posição da úvula.",
+    questions: [
       {
-        pergunta:
-          "Como deve ser solicitado que o paciente produza o som durante o exame?",
-        alternativas: [
-          "Diga “Ah!” ou “Eh!” e mantenha",
-          "Diga apenas “O”",
-          "Mantenha os dentes cerrados",
-          "Prenda a respiração",
+        q: "Como avaliar o movimento do palato?",
+        a: [
+          "Pedindo para dizer “Ah!” ou “Eh!”",
+          "Pedindo para fechar os olhos",
+          "Aplicando luz na pupila",
+          "Elevando os ombros",
         ],
-        resposta: 0,
-        explicacao:
-          "A fonte recomenda solicitar a emissão de “Ah!” ou “Eh!” e observar o palato.",
+        correct: 0,
       },
       {
-        pergunta:
-          "Quais nervos são examinados conjuntamente nesse teste?",
-        alternativas: [
-          "III e IV",
-          "V e VII",
-          "IX e X",
-          "XI e XII",
-        ],
-        resposta: 2,
-        explicacao:
-          "Os nervos glossofaríngeo e vago são examinados conjuntamente na avaliação do palato e faringe.",
-      },
-      {
-        pergunta:
-          "Qual alteração da voz pode estar associada a lesões desses nervos?",
-        alternativas: [
-          "Voz nasal ou bitonal",
-          "Somente rouquidão fisiológica",
-          "Afonia obrigatória",
-          "Nenhuma alteração vocal",
-        ],
-        resposta: 0,
-        explicacao:
-          "A fonte descreve voz nasal ou bitonal entre as manifestações possíveis.",
+        q: "Quais estruturas devem ser observadas?",
+        a: ["Palato e úvula", "Pupilas", "Trapézio", "Masseter"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "IX e X — Glossofaríngeo e Vago",
-    titulo: "Sensibilidade da faringe",
-    desafio:
-      "Avalie a sensibilidade da região faríngea por meio de estímulo dos pilares amigdalianos.",
-    comoFazer: [
-      "Peça ao paciente para abrir a boca.",
-      "Utilize um abaixador de língua.",
-      "Toque delicadamente um dos pilares amigdalianos.",
-      "Pergunte ao paciente se percebeu o estímulo.",
-      "Repita do outro lado.",
-      "O reflexo de vômito pode ser utilizado como confirmação.",
-    ],
-    perguntas: [
+    id: 14,
+    nerves: "IX e X — Glossofaríngeo e Vago",
+    title: "Sensibilidade da faringe",
+    challenge: "Avalie a sensibilidade da região faríngea.",
+    procedure:
+      "Com um abaixador de língua, toque delicadamente os pilares das tonsilas de cada lado e pergunte se o paciente percebe o estímulo. O reflexo de vômito pode confirmar.",
+    questions: [
       {
-        pergunta:
-          "Qual instrumento pode ser utilizado para estimular os pilares amigdalianos?",
-        alternativas: [
-          "Algodão apenas na córnea",
-          "Abaixador de língua",
-          "Diapasão",
-          "Tabela de Snellen",
+        q: "Como examinar a sensibilidade faríngea?",
+        a: [
+          "Tocando os pilares das tonsilas com abaixador",
+          "Aplicando luz",
+          "Testando visão",
+          "Palpando o temporal",
         ],
-        resposta: 1,
-        explicacao:
-          "A fonte descreve o uso do abaixador de língua para tocar os pilares amigdalianos.",
+        correct: 0,
       },
       {
-        pergunta:
-          "O paciente deve ser questionado sobre:",
-        alternativas: [
-          "Se percebeu o estímulo",
-          "Se enxerga melhor",
-          "Se identifica um odor",
-          "Se percebe diplopia",
-        ],
-        resposta: 0,
-        explicacao:
-          "A sensibilidade faríngea é avaliada perguntando se o paciente percebeu o estímulo.",
-      },
-      {
-        pergunta:
-          "Qual reflexo pode ajudar a confirmar a avaliação?",
-        alternativas: [
-          "Fotomotor",
-          "Córneo-palpebral",
-          "Gag",
-          "Aquileu",
-        ],
-        resposta: 2,
-        explicacao:
-          "A fonte cita o reflexo de vômito (gag) como possibilidade de confirmação.",
+        q: "Qual resposta pode auxiliar na confirmação?",
+        a: ["Reflexo de vômito", "Fotomotor", "Patelar", "Aquileu"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "XI — Nervo Acessório",
-    titulo: "Trapézio",
-    desafio:
-      "Avalie a função do músculo trapézio por meio da elevação dos ombros contra resistência.",
-    comoFazer: [
-      "Peça ao paciente para elevar os ombros.",
-      "Aplique resistência para baixo.",
-      "Compare a força dos dois lados.",
-      "Observe assimetria.",
-      "Observe eventual queda do ombro.",
-      "Observe sinais de atrofia.",
-    ],
-    perguntas: [
+    id: 15,
+    nerves: "XI — Acessório",
+    title: "Trapézio",
+    challenge: "Avalie a força do músculo trapézio.",
+    procedure:
+      "Peça ao paciente para elevar os ombros contra a resistência das suas mãos. Compare os dois lados e observe queda ou atrofia.",
+    questions: [
       {
-        pergunta:
-          "Qual músculo é avaliado pela elevação dos ombros contra resistência?",
-        alternativas: [
-          "Trapézio",
-          "Masseter",
-          "Temporal",
-          "Esternocleidomastóideo",
+        q: "Como testar o trapézio?",
+        a: [
+          "Elevar os ombros contra resistência.",
+          "Abrir a boca.",
+          "Movimentar a língua.",
+          "Seguir um objeto com os olhos.",
         ],
-        resposta: 0,
-        explicacao:
-          "A elevação dos ombros contra resistência avalia o trapézio.",
+        correct: 0,
       },
       {
-        pergunta:
-          "O que pode ocorrer em uma lesão do nervo acessório?",
-        alternativas: [
-          "Queda do ombro e atrofia",
-          "Anosmia",
-          "Amaurose",
-          "Diplopia obrigatória",
-        ],
-        resposta: 0,
-        explicacao:
-          "A fonte descreve queda do ombro e atrofia em lesões relacionadas ao trapézio.",
-      },
-      {
-        pergunta:
-          "Qual nervo está sendo avaliado?",
-        alternativas: [
-          "VII",
-          "VIII",
-          "XI",
-          "XII",
-        ],
-        resposta: 2,
-        explicacao:
-          "O XI nervo craniano é o nervo acessório.",
+        q: "O que pode aparecer em uma lesão do XI?",
+        a: ["Queda ou atrofia do ombro.", "Anosmia.", "Amaurose.", "Diplopia obrigatória."],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "XI — Nervo Acessório",
-    titulo: "Esternocleidomastóideo",
-    desafio:
-      "Avalie a força dos músculos esternocleidomastóideos durante a rotação da cabeça contra resistência.",
-    comoFazer: [
-      "Peça ao paciente para manter a cabeça centralizada.",
-      "Solicite que gire a cabeça para um lado.",
-      "Aplique resistência ao movimento.",
-      "Compare a força dos dois lados.",
-      "Repita para o lado oposto.",
-    ],
-    perguntas: [
+    id: 16,
+    nerves: "XI — Acessório",
+    title: "Esternocleidomastóideo",
+    challenge: "Avalie a força do esternocleidomastóideo.",
+    procedure:
+      "Peça ao paciente para girar a cabeça contra resistência. A rotação para a direita testa principalmente o esternocleidomastóideo esquerdo; para a esquerda, o direito.",
+    questions: [
       {
-        pergunta:
-          "Ao pedir que o paciente gire a cabeça para a direita contra resistência, qual esternocleidomastóideo está sendo testado principalmente?",
-        alternativas: [
-          "Direito",
-          "Esquerdo",
-          "Ambos exclusivamente",
-          "Nenhum",
-        ],
-        resposta: 1,
-        explicacao:
-          "A fonte descreve que a rotação da cabeça para a direita contra resistência testa o esternocleidomastóideo esquerdo.",
+        q: "A rotação da cabeça para a direita testa principalmente qual lado?",
+        a: ["Esquerdo", "Direito", "Ambos exclusivamente", "Nenhum"],
+        correct: 0,
       },
       {
-        pergunta:
-          "A rotação para a esquerda contra resistência testa principalmente o:",
-        alternativas: [
-          "Esternocleidomastóideo direito",
-          "Esternocleidomastóideo esquerdo",
-          "Trapézio esquerdo",
-          "Masseter direito",
-        ],
-        resposta: 0,
-        explicacao:
-          "A rotação para a esquerda testa principalmente o esternocleidomastóideo direito.",
-      },
-      {
-        pergunta:
-          "Qual nervo fornece a inervação motora principal avaliada nesse teste?",
-        alternativas: [
-          "IX",
-          "X",
-          "XI",
-          "XII",
-        ],
-        resposta: 2,
-        explicacao:
-          "O XI nervo craniano participa da inervação motora do esternocleidomastóideo.",
+        q: "O exame deve ser realizado contra:",
+        a: ["Resistência", "Luz", "Algodão na córnea", "Estímulo gustativo"],
+        correct: 0,
       },
     ],
   },
-
   {
-    nervo: "XII — Nervo Hipoglosso",
-    titulo: "Movimentação da língua",
-    desafio:
-      "Avalie a motricidade da língua, observando seus movimentos, força e eventual desvio.",
-    comoFazer: [
-      "Peça ao paciente para colocar a língua para fora.",
-      "Observe a posição da língua.",
-      "Peça para mover a língua para cima.",
-      "Peça para mover para baixo.",
-      "Peça para mover para a direita e para a esquerda.",
-      "Peça para pressionar a língua contra a bochecha.",
-      "Palpe a consistência da língua quando necessário.",
-      "Observe atrofias e assimetrias.",
-    ],
-    perguntas: [
+    id: 17,
+    nerves: "XII — Hipoglosso",
+    title: "Movimentação da língua",
+    challenge: "Avalie a motricidade e a simetria da língua.",
+    procedure:
+      "Observe a língua em repouso e peça ao paciente para colocá-la para fora, movimentá-la para cima, para baixo e para os lados e pressioná-la contra a bochecha. Observe desvios e alterações de trofismo.",
+    questions: [
       {
-        pergunta:
-          "Para qual lado a língua tende a desviar quando protrudida em uma paralisia unilateral?",
-        alternativas: [
-          "Para o lado saudável",
-          "Para o lado paralisado",
-          "Sempre para a direita",
-          "Sempre para a esquerda",
-        ],
-        resposta: 1,
-        explicacao:
-          "A fonte descreve desvio da língua para o lado paralisado durante a protrusão.",
+        q: "Qual nervo está relacionado aos movimentos da língua?",
+        a: ["VII", "IX", "X", "XII"],
+        correct: 3,
       },
       {
-        pergunta:
-          "O XII nervo craniano é predominantemente:",
-        alternativas: [
-          "Sensitivo",
-          "Motor",
-          "Autonômico",
-          "Visual",
+        q: "O que deve ser observado ao colocar a língua para fora?",
+        a: [
+          "Desvio e alterações de trofismo.",
+          "Acuidade visual.",
+          "Movimento dos olhos.",
+          "Resposta pupilar.",
         ],
-        resposta: 1,
-        explicacao:
-          "O nervo hipoglosso é exclusivamente motor.",
-      },
-      {
-        pergunta:
-          "O que deve ser observado durante a inspeção da língua?",
-        alternativas: [
-          "Somente a cor",
-          "Movimentos, trofismo e desvios",
-          "Somente a sensibilidade térmica",
-          "Somente o paladar",
-        ],
-        resposta: 1,
-        explicacao:
-          "A fonte orienta observar movimentos, trofismo e desvio da língua.",
+        correct: 0,
       },
     ],
   },
 ];
 
-function sortearTeste(anterior: Teste | null) {
-  const disponiveis = TESTES.filter((teste) => teste !== anterior);
-
-  return disponiveis[Math.floor(Math.random() * disponiveis.length)];
-}
-
-function sortearQuestoes(teste: Teste) {
-  const embaralhadas = [...teste.perguntas].sort(
-    () => Math.random() - 0.5
-  );
-
-  return embaralhadas.slice(0, 2);
+function randomItem<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
 }
 
 export default function NervosCranianosPage() {
   const router = useRouter();
 
-  const [testeAtual, setTesteAtual] = useState<Teste | null>(null);
-  const [questoes, setQuestoes] = useState<Questao[]>([]);
-  const [indiceQuestao, setIndiceQuestao] = useState(0);
-  const [respostaSelecionada, setRespostaSelecionada] = useState<
-    number | null
-  >(null);
-  const [respondeu, setRespondeu] = useState(false);
-  const [pontuacao, setPontuacao] = useState(0);
-  const [finalizado, setFinalizado] = useState(false);
-  const [testeRealizado, setTesteRealizado] = useState(false);
-  const [estacao, setEstacao] = useState(1);
+  const [test, setTest] = useState<Test | null>(null);
+  const [performed, setPerformed] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const [station, setStation] = useState(1);
 
   useEffect(() => {
-    const acesso = sessionStorage.getItem("anatolab_acesso_nervos");
+    const access = sessionStorage.getItem("anatolab_acesso_nervos");
 
-    if (acesso !== "true") {
+    if (access !== "true") {
       router.replace("/aluno");
       return;
     }
 
-    setTesteAtual(sortearTeste(null));
+    chooseTest();
   }, [router]);
 
-  function iniciarAvaliacao() {
-    if (!testeAtual) return;
+  function chooseTest(previousId?: number) {
+    const available =
+      previousId && tests.length > 1
+        ? tests.filter((item) => item.id !== previousId)
+        : tests;
 
-    setTesteRealizado(true);
-    setQuestoes(sortearQuestoes(testeAtual));
-    setIndiceQuestao(0);
-    setRespostaSelecionada(null);
-    setRespondeu(false);
-    setPontuacao(0);
-    setFinalizado(false);
+    const next = randomItem(available);
+
+    setTest(next);
+    setPerformed(false);
+    setQuestions([]);
+    setCurrent(0);
+    setSelected(null);
+    setAnswered(false);
+    setScore(0);
+    setFinished(false);
   }
 
-  function selecionarResposta(index: number) {
-    if (respondeu) return;
+  function performTest() {
+    if (!test) return;
 
-    setRespostaSelecionada(index);
-    setRespondeu(true);
+    const selectedQuestions = [...test.questions]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 2);
 
-    const questao = questoes[indiceQuestao];
+    setQuestions(selectedQuestions);
+    setPerformed(true);
+    setCurrent(0);
+    setSelected(null);
+    setAnswered(false);
+    setScore(0);
+    setFinished(false);
+  }
 
-    if (index === questao.resposta) {
-      setPontuacao((valor) => valor + 1);
+  function answer(index: number) {
+    if (answered) return;
+
+    setSelected(index);
+    setAnswered(true);
+
+    if (questions[current] && index === questions[current].correct) {
+      setScore((value) => value + 1);
     }
   }
 
-  function proximaQuestao() {
-    if (indiceQuestao < questoes.length - 1) {
-      setIndiceQuestao((valor) => valor + 1);
-      setRespostaSelecionada(null);
-      setRespondeu(false);
-      return;
+  function nextQuestion() {
+    if (current < questions.length - 1) {
+      setCurrent((value) => value + 1);
+      setSelected(null);
+      setAnswered(false);
+    } else {
+      setFinished(true);
     }
-
-    setFinalizado(true);
   }
 
-  function novoTeste() {
-    const novo = sortearTeste(testeAtual);
-
-    setTesteAtual(novo);
-    setTesteRealizado(false);
-    setQuestoes([]);
-    setIndiceQuestao(0);
-    setRespostaSelecionada(null);
-    setRespondeu(false);
-    setPontuacao(0);
-    setFinalizado(false);
-    setEstacao((valor) => valor + 1);
+  function newTest() {
+    setStation((value) => value + 1);
+    chooseTest(test?.id);
   }
 
-  if (!testeAtual) {
+  if (!test) {
     return (
-      <main style={styles.loading}>
-        <div style={styles.loadingBox}>
-          <div style={styles.loadingLine} />
-          <p style={styles.loadingText}>Preparando estação prática...</p>
-        </div>
+      <main className="loading">
+        <div>Carregando estação...</div>
+        <style jsx>{styles}</style>
       </main>
     );
   }
 
-  const questaoAtual = questoes[indiceQuestao];
+  const question = questions[current];
+
+  const percentage = questions.length
+    ? Math.round((score / questions.length) * 100)
+    : 0;
 
   return (
-    <main style={styles.page}>
-      <div style={styles.backgroundMark} />
+    <main className="page">
+      <header className="topbar">
+        <div className="brand">
+          <div className="mark">A</div>
 
-      <div style={styles.shell}>
-        <header style={styles.header}>
+          <div className="brand-text">
+            <strong>ANATOLAB</strong>
+            <small>LABORATÓRIO DE ANATOMIA</small>
+          </div>
+        </div>
+
+        <button
+          className="back"
+          type="button"
+          onClick={() => router.push("/aluno")}
+        >
+          VOLTAR
+        </button>
+      </header>
+
+      <section className="hero">
+        <span>ANATOMIA II · LHS</span>
+
+        <h1>
+          Exame dos
+          <em> nervos cranianos.</em>
+        </h1>
+
+        <p>
+          Uma estação prática para testar sua capacidade de reconhecer,
+          executar e interpretar o exame neurológico.
+        </p>
+      </section>
+
+      <div className="station">
+        <div className="station-number">
+          <small>ESTAÇÃO</small>
+          <b>{String(station).padStart(2, "0")}</b>
+        </div>
+
+        <div className="station-info">
+          <small>DESAFIO PRÁTICO</small>
+          <strong>{test.nerves}</strong>
+        </div>
+      </div>
+
+      <section className="card">
+        <div className="card-head">
           <div>
-            <div style={styles.marcaPequena}>ANATOLAB</div>
-            <div style={styles.marcaSub}>LABORATÓRIO DE ANATOMIA</div>
+            <small>{test.nerves}</small>
+            <h2>{test.title}</h2>
           </div>
 
-          <div style={styles.headerRight}>
-            <span style={styles.disciplina}>ANATOMIA II</span>
-
-            <button
-              type="button"
-              onClick={() => router.push("/aluno")}
-              style={styles.backButton}
-            >
-              VOLTAR
-            </button>
+          <div className="number">
+            {String(test.id).padStart(2, "0")}
           </div>
-        </header>
+        </div>
 
-        <section style={styles.hero}>
-          <div>
-            <div style={styles.overline}>
-              ESTAÇÃO PRÁTICA · NERVOS CRANIANOS
+        {!performed && (
+          <>
+            <div className="challenge">
+              <small>SUA MISSÃO</small>
+              <p>{test.challenge}</p>
             </div>
 
-            <h1 style={styles.title}>
-              Exame dos
-              <br />
-              <span style={styles.titleAccent}>nervos cranianos.</span>
-            </h1>
+            <div className="notice">
+              <i>?</i>
 
-            <p style={styles.subtitle}>
-              Uma estação de avaliação clínica. Leia o desafio, realize o
-              procedimento e depois responda às questões para consolidar o
-              exame neurológico.
-            </p>
-          </div>
-
-          <div style={styles.station}>
-            <span style={styles.stationLabel}>ESTAÇÃO</span>
-            <strong style={styles.stationNumber}>
-              {String(estacao).padStart(2, "0")}
-            </strong>
-            <span style={styles.stationLine} />
-            <span style={styles.stationSmall}>PRÁTICA</span>
-          </div>
-        </section>
-
-        <section style={styles.mainCard}>
-          <div style={styles.cardTop}>
-            <div>
-              <span style={styles.cardEyebrow}>NERVOS CRANIANOS</span>
-              <h2 style={styles.cardTitle}>{testeAtual.nervo}</h2>
-            </div>
-
-            <div style={styles.testNumber}>
-              <span>TESTE</span>
-              <strong>
-                {String(TESTES.indexOf(testeAtual) + 1).padStart(2, "0")}
-              </strong>
-              <span>/ {String(TESTES.length).padStart(2, "0")}</span>
-            </div>
-          </div>
-
-          <div style={styles.divider} />
-
-          {!testeRealizado && !finalizado && (
-            <>
-              <div style={styles.challengeHeader}>
-                <span style={styles.sectionNumber}>01</span>
-
-                <div>
-                  <span style={styles.sectionLabel}>DESAFIO CLÍNICO</span>
-                  <h3 style={styles.sectionTitle}>{testeAtual.titulo}</h3>
-                </div>
-              </div>
-
-              <div style={styles.challengeBox}>
-                <div style={styles.quoteMark}>“</div>
-
-                <p style={styles.challengeText}>
-                  {testeAtual.desafio}
+              <div>
+                <b>Antes de realizar o teste</b>
+                <p>
+                  Execute o procedimento como faria em uma estação prática.
+                  A explicação detalhada será liberada depois que você marcar
+                  o teste como realizado.
                 </p>
               </div>
+            </div>
 
-              {testeAtual.observacao && (
-                <div style={styles.observation}>
-                  <span style={styles.observationLabel}>NOTA TÉCNICA</span>
-                  <p>{testeAtual.observacao}</p>
-                </div>
-              )}
+            <button className="primary" type="button" onClick={performTest}>
+              TESTE REALIZADO
+              <span>→</span>
+            </button>
+          </>
+        )}
 
-              <div style={styles.actionArea}>
-                <div>
-                  <span style={styles.actionLabel}>ETAPA 01</span>
-                  <p style={styles.actionDescription}>
-                    Realize o exame no paciente ou simule o procedimento.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={iniciarAvaliacao}
-                  style={styles.primaryButton}
-                >
-                  TESTE REALIZADO
-                  <span style={styles.buttonArrow}>→</span>
-                </button>
-              </div>
-            </>
-          )}
-
-          {testeRealizado && !finalizado && questaoAtual && (
-            <>
-              <div style={styles.instructionsHeader}>
-                <span style={styles.sectionNumber}>02</span>
-
-                <div>
-                  <span style={styles.sectionLabel}>
-                    PROCEDIMENTO ESPERADO
-                  </span>
-
-                  <h3 style={styles.sectionTitle}>
-                    Como o teste deveria ser realizado
-                  </h3>
-                </div>
+        {performed && !finished && question && (
+          <>
+            <div className="procedure">
+              <div className="procedure-head">
+                <small>COMO O TESTE DEVERIA SER REALIZADO</small>
+                <b>LIBERADO</b>
               </div>
 
-              <div style={styles.procedureBox}>
-                {testeAtual.comoFazer.map((passo, index) => (
-                  <div key={index} style={styles.procedureItem}>
-                    <span style={styles.procedureNumber}>
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
+              <p>{test.procedure}</p>
+            </div>
 
-                    <p>{passo}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="divider">
+              <span>VERIFICAÇÃO</span>
+            </div>
 
-              <div style={styles.quizDivider}>
-                <span />
-                <strong>VERIFICAÇÃO DE CONHECIMENTO</strong>
-                <span />
-              </div>
+            <div className="question-head">
+              <small>
+                QUESTÃO {current + 1} DE {questions.length}
+              </small>
 
-              <div style={styles.quizHeader}>
-                <div>
-                  <span style={styles.sectionLabel}>QUESTÃO</span>
+              <h3>{question.q}</h3>
 
-                  <h3 style={styles.questionCounter}>
-                    {String(indiceQuestao + 1).padStart(2, "0")}
-                    <span>/02</span>
-                  </h3>
-                </div>
-
-                <div style={styles.progressContainer}>
-                  <div style={styles.progressTrack}>
-                    <div
-                      style={{
-                        ...styles.progressFill,
-                        width: `${
-                          ((indiceQuestao + 1) / questoes.length) * 100
-                        }%`,
-                      }}
-                    />
-                  </div>
-
-                  <span style={styles.progressText}>
-                    {Math.round(
-                      ((indiceQuestao + 1) / questoes.length) * 100
-                    )}
-                    %
-                  </span>
-                </div>
-              </div>
-
-              <div style={styles.questionCard}>
-                <p style={styles.question}>{questaoAtual.pergunta}</p>
-
-                <div style={styles.options}>
-                  {questaoAtual.alternativas.map((alternativa, index) => {
-                    const correta = index === questaoAtual.resposta;
-                    const selecionada =
-                      index === respostaSelecionada;
-
-                    let optionStyle = styles.option;
-
-                    if (respondeu && correta) {
-                      optionStyle = {
-                        ...styles.option,
-                        ...styles.optionCorrect,
-                      };
-                    } else if (respondeu && selecionada && !correta) {
-                      optionStyle = {
-                        ...styles.option,
-                        ...styles.optionWrong,
-                      };
-                    } else if (selecionada) {
-                      optionStyle = {
-                        ...styles.option,
-                        ...styles.optionSelected,
-                      };
-                    }
-
-                    return (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => selecionarResposta(index)}
-                        style={optionStyle}
-                      >
-                        <span style={styles.optionLetter}>
-                          {String.fromCharCode(65 + index)}
-                        </span>
-
-                        <span style={styles.optionText}>
-                          {alternativa}
-                        </span>
-
-                        {respondeu && correta && (
-                          <span style={styles.optionStatus}>CORRETA</span>
-                        )}
-
-                        {respondeu && selecionada && !correta && (
-                          <span style={styles.optionStatusWrong}>
-                            INCORRETA
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {respondeu && (
-                  <div
-                    style={
-                      respostaSelecionada === questaoAtual.resposta
-                        ? styles.feedbackCorrect
-                        : styles.feedbackWrong
-                    }
-                  >
-                    <div style={styles.feedbackTitle}>
-                      {respostaSelecionada === questaoAtual.resposta
-                        ? "Resposta correta"
-                        : "Resposta incorreta"}
-                    </div>
-
-                    <p>{questaoAtual.explicacao}</p>
-                  </div>
-                )}
-
-                {respondeu && (
-                  <button
-                    type="button"
-                    onClick={proximaQuestao}
-                    style={styles.nextButton}
-                  >
-                    {indiceQuestao < questoes.length - 1
-                      ? "PRÓXIMA QUESTÃO"
-                      : "FINALIZAR ESTAÇÃO"}
-
-                    <span>→</span>
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-
-          {finalizado && (
-            <div style={styles.final}>
-              <div style={styles.finalHeader}>
-                <span style={styles.sectionLabel}>ESTAÇÃO CONCLUÍDA</span>
-
-                <div style={styles.finalLine} />
-
-                <h2 style={styles.finalTitle}>
-                  Avaliação
-                  <br />
-                  finalizada.
-                </h2>
-              </div>
-
-              <div style={styles.scoreBox}>
-                <div>
-                  <span style={styles.scoreLabel}>DESEMPENHO</span>
-                  <p style={styles.scoreDescription}>
-                    Resultado da verificação de conhecimento desta estação.
-                  </p>
-                </div>
-
-                <div style={styles.score}>
-                  <strong>{pontuacao}</strong>
-                  <span>/ 2</span>
-                </div>
-              </div>
-
-              <div style={styles.finalMessage}>
-                {pontuacao === 2 && (
-                  <>
-                    <strong>Excelente desempenho.</strong>
-                    <p>
-                      Você acertou as duas questões da estação. O
-                      conhecimento clínico demonstrado está consistente com o
-                      procedimento avaliado.
-                    </p>
-                  </>
-                )}
-
-                {pontuacao === 1 && (
-                  <>
-                    <strong>Bom trabalho.</strong>
-                    <p>
-                      Você acertou uma das questões. Revise o procedimento
-                      antes de seguir para a próxima estação.
-                    </p>
-                  </>
-                )}
-
-                {pontuacao === 0 && (
-                  <>
-                    <strong>Momento de revisar.</strong>
-                    <p>
-                      Use a explicação apresentada nas questões e refaça a
-                      estação para consolidar o conteúdo.
-                    </p>
-                  </>
-                )}
-              </div>
-
-              <div style={styles.finalActions}>
-                <button
-                  type="button"
-                  onClick={novoTeste}
-                  style={styles.primaryButton}
-                >
-                  NOVO TESTE
-                  <span style={styles.buttonArrow}>→</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => router.push("/aluno")}
-                  style={styles.secondaryButton}
-                >
-                  VOLTAR AO ACESSO
-                </button>
+              <div className="progress">
+                <span
+                  style={{
+                    width: `${((current + 1) / questions.length) * 100}%`,
+                  }}
+                />
               </div>
             </div>
-          )}
-        </section>
 
-        <footer style={styles.footer}>
-          <div>
-            <strong>ANATOLAB</strong>
-            <span>ANATOMIA II · LHS</span>
+            <div className="answers">
+              {question.a.map((answerText, index) => {
+                const isSelected = selected === index;
+                const isCorrect = question.correct === index;
+
+                let className = "answer";
+
+                if (answered && isCorrect) {
+                  className += " correct";
+                } else if (answered && isSelected && !isCorrect) {
+                  className += " wrong";
+                } else if (isSelected) {
+                  className += " chosen";
+                }
+
+                return (
+                  <button
+                    key={answerText}
+                    type="button"
+                    className={className}
+                    disabled={answered}
+                    onClick={() => answer(index)}
+                  >
+                    <b>{String.fromCharCode(65 + index)}</b>
+                    <span>{answerText}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {answered && (
+              <div className="feedback">
+                <b>
+                  {selected === question.correct
+                    ? "Resposta correta."
+                    : "Resposta incorreta."}
+                </b>
+
+                <p>
+                  {selected === question.correct
+                    ? "Boa. Você identificou corretamente o ponto principal do exame."
+                    : `A alternativa correta é ${String.fromCharCode(
+                        65 + question.correct
+                      )}.`}
+                </p>
+              </div>
+            )}
+
+            {answered && (
+              <button
+                className="primary"
+                type="button"
+                onClick={nextQuestion}
+              >
+                {current < questions.length - 1
+                  ? "PRÓXIMA QUESTÃO"
+                  : "VER RESULTADO"}
+                <span>→</span>
+              </button>
+            )}
+          </>
+        )}
+
+        {finished && (
+          <div className="result">
+            <small>ESTAÇÃO CONCLUÍDA</small>
+
+            <strong>{percentage}%</strong>
+
+            <h3>
+              {score === questions.length
+                ? "Excelente domínio."
+                : score === 1
+                ? "Quase lá."
+                : "Hora de revisar."}
+            </h3>
+
+            <p>
+              Você acertou <b>{score}</b> de <b>{questions.length}</b>{" "}
+              questões desta estação.
+            </p>
+
+            <button className="primary" type="button" onClick={newTest}>
+              NOVO TESTE
+              <span>→</span>
+            </button>
           </div>
+        )}
+      </section>
 
-          <span style={styles.footerCenter}>
-            ESTAÇÃO DE EXAME NEUROLÓGICO
-          </span>
+      <footer>
+        <b>ANATOLAB</b>
+        <span>ANATOMIA II · LABORATÓRIO DE HABILIDADES SIMULADAS</span>
+        <i />
+        <span>ESTAÇÃO PRÁTICA</span>
+      </footer>
 
-          <span>MONITORIA ACADÊMICA</span>
-        </footer>
-      </div>
+      <style jsx>{styles}</style>
     </main>
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  page: {
-    minHeight: "100vh",
-    background: "#F2E5C6",
-    color: "#3B010B",
-    fontFamily:
-      "Arial, Helvetica, sans-serif",
-    position: "relative",
-    overflow: "hidden",
-  },
-
-  backgroundMark: {
-    position: "fixed",
-    width: "520px",
-    height: "520px",
-    border: "1px solid rgba(117, 22, 45, 0.08)",
-    borderRadius: "50%",
-    right: "-260px",
-    top: "-220px",
-    pointerEvents: "none",
-  },
-
-  shell: {
-    width: "min(1180px, calc(100% - 48px))",
-    margin: "0 auto",
-    position: "relative",
-    zIndex: 1,
-  },
-
-  header: {
-    minHeight: "86px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottom: "1px solid rgba(86, 11, 24, 0.2)",
-  },
-
-  marcaPequena: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "24px",
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    color: "#560B18",
-  },
-
-  marcaSub: {
-    marginTop: "4px",
-    fontSize: "9px",
-    letterSpacing: "0.22em",
-    color: "#75162D",
-  },
-
-  headerRight: {
-    display: "flex",
-    alignItems: "center",
-    gap: "28px",
-  },
-
-  disciplina: {
-    fontSize: "10px",
-    fontWeight: 700,
-    letterSpacing: "0.18em",
-    color: "#75162D",
-  },
-
-  backButton: {
-    border: "none",
-    background: "transparent",
-    color: "#560B18",
-    fontSize: "10px",
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    cursor: "pointer",
-    padding: "10px 0",
-  },
-
-  hero: {
-    minHeight: "330px",
-    display: "grid",
-    gridTemplateColumns: "1fr 170px",
-    alignItems: "center",
-    gap: "60px",
-    padding: "58px 0 48px",
-  },
-
-  overline: {
-    fontSize: "10px",
-    fontWeight: 700,
-    letterSpacing: "0.22em",
-    color: "#75162D",
-    marginBottom: "20px",
-  },
-
-  title: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "clamp(48px, 7vw, 86px)",
-    lineHeight: 0.92,
-    fontWeight: 500,
-    letterSpacing: "-0.055em",
-    margin: 0,
-    color: "#3B010B",
-  },
-
-  titleAccent: {
-    color: "#75162D",
-  },
-
-  subtitle: {
-    maxWidth: "610px",
-    fontSize: "15px",
-    lineHeight: 1.75,
-    color: "#5B4044",
-    margin: "30px 0 0",
-  },
-
-  station: {
-    width: "150px",
-    height: "170px",
-    border: "1px solid rgba(86, 11, 24, 0.35)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  },
-
-  stationLabel: {
-    fontSize: "9px",
-    letterSpacing: "0.24em",
-    fontWeight: 700,
-    color: "#75162D",
-  },
-
-  stationNumber: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "64px",
-    lineHeight: 1,
-    fontWeight: 500,
-    color: "#560B18",
-    margin: "8px 0",
-  },
-
-  stationLine: {
-    width: "38px",
-    height: "1px",
-    background: "#75162D",
-    margin: "5px 0 10px",
-  },
-
-  stationSmall: {
-    fontSize: "8px",
-    letterSpacing: "0.24em",
-    color: "#75162D",
-  },
-
-  mainCard: {
-    background: "#FFFDF8",
-    border: "1px solid rgba(86, 11, 24, 0.18)",
-    boxShadow:
-      "0 22px 55px rgba(59, 1, 11, 0.10)",
-    padding: "50px 54px 54px",
-    marginBottom: "46px",
-  },
-
-  cardTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "30px",
-  },
-
-  cardEyebrow: {
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.22em",
-    color: "#75162D",
-  },
-
-  cardTitle: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "31px",
-    fontWeight: 500,
-    lineHeight: 1.2,
-    margin: "12px 0 0",
-    color: "#3B010B",
-  },
-
-  testNumber: {
-    display: "flex",
-    alignItems: "baseline",
-    gap: "5px",
-    color: "#8C7276",
-    fontSize: "9px",
-    letterSpacing: "0.12em",
-    whiteSpace: "nowrap",
-  },
-
-  divider: {
-    height: "1px",
-    background: "rgba(86, 11, 24, 0.15)",
-    margin: "30px 0 38px",
-  },
-
-  challengeHeader: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "18px",
-    marginBottom: "24px",
-  },
-
-  instructionsHeader: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "18px",
-    marginBottom: "24px",
-  },
-
-  sectionNumber: {
-    width: "34px",
-    height: "34px",
-    minWidth: "34px",
-    border: "1px solid #75162D",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "10px",
-    fontWeight: 700,
-    color: "#75162D",
-  },
-
-  sectionLabel: {
-    display: "block",
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.2em",
-    color: "#75162D",
-    marginBottom: "7px",
-  },
-
-  sectionTitle: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "25px",
-    fontWeight: 500,
-    margin: 0,
-    color: "#3B010B",
-  },
-
-  challengeBox: {
-    position: "relative",
-    background: "#F2E5C6",
-    borderLeft: "4px solid #75162D",
-    padding: "34px 48px 34px 50px",
-    marginBottom: "22px",
-  },
-
-  quoteMark: {
-    position: "absolute",
-    left: "17px",
-    top: "17px",
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "42px",
-    lineHeight: 1,
-    color: "#75162D",
-  },
-
-  challengeText: {
-    margin: 0,
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "21px",
-    lineHeight: 1.55,
-    color: "#560B18",
-  },
-
-  observation: {
-    border: "1px solid rgba(117, 22, 45, 0.2)",
-    padding: "18px 22px",
-    marginBottom: "35px",
-    background: "#FFFAF0",
-  },
-
-  observationLabel: {
-    display: "block",
-    fontSize: "8px",
-    fontWeight: 700,
-    letterSpacing: "0.2em",
-    color: "#75162D",
-    marginBottom: "8px",
-  },
-
-  actionArea: {
-    borderTop: "1px solid rgba(86, 11, 24, 0.15)",
-    paddingTop: "28px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "30px",
-  },
-
-  actionLabel: {
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.2em",
-    color: "#75162D",
-  },
-
-  actionDescription: {
-    margin: "7px 0 0",
-    fontSize: "13px",
-    color: "#705A5E",
-  },
-
-  primaryButton: {
-    border: "none",
-    background: "#560B18",
-    color: "#FFFDF8",
-    minHeight: "52px",
-    padding: "0 22px",
-    display: "flex",
-    alignItems: "center",
-    gap: "26px",
-    fontSize: "10px",
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-
-  buttonArrow: {
-    fontSize: "18px",
-    lineHeight: 1,
-    fontWeight: 400,
-  },
-
-  procedureBox: {
-    borderTop: "1px solid rgba(86, 11, 24, 0.16)",
-    borderBottom: "1px solid rgba(86, 11, 24, 0.16)",
-    marginBottom: "38px",
-  },
-
-  procedureItem: {
-    display: "grid",
-    gridTemplateColumns: "50px 1fr",
-    alignItems: "center",
-    gap: "18px",
-    minHeight: "60px",
-    borderBottom: "1px solid rgba(86, 11, 24, 0.10)",
-  },
-
-  procedureNumber: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "13px",
-    color: "#75162D",
-    textAlign: "center",
-  },
-
-  procedureItemText: {
-    fontSize: "14px",
-    lineHeight: 1.55,
-    color: "#4D393D",
-  },
-
-  quizDivider: {
-    display: "grid",
-    gridTemplateColumns: "1fr auto 1fr",
-    alignItems: "center",
-    gap: "18px",
-    margin: "42px 0 34px",
-  },
-
-  quizHeader: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    gap: "30px",
-    marginBottom: "20px",
-  },
-
-  questionCounter: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "38px",
-    fontWeight: 500,
-    lineHeight: 1,
-    color: "#560B18",
-    margin: 0,
-  },
-
-  progressContainer: {
-    width: "260px",
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-
-  progressTrack: {
-    height: "4px",
-    background: "#E2D9A0",
-    flex: 1,
-  },
-
-  progressFill: {
-    height: "100%",
-    background: "#75162D",
-    transition: "width 0.25s ease",
-  },
-
-  progressText: {
-    fontSize: "9px",
-    fontWeight: 700,
-    color: "#75162D",
-    letterSpacing: "0.08em",
-  },
-
-  questionCard: {
-    background: "#FFFAF0",
-    border: "1px solid rgba(86, 11, 24, 0.16)",
-    padding: "34px",
-  },
-
-  question: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "22px",
-    lineHeight: 1.45,
-    color: "#3B010B",
-    margin: "0 0 28px",
-  },
-
-  options: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "9px",
-  },
-
-  option: {
-    width: "100%",
-    minHeight: "58px",
-    display: "flex",
-    alignItems: "center",
-    textAlign: "left",
-    gap: "15px",
-    padding: "9px 14px",
-    background: "#FFFDF8",
-    border: "1px solid rgba(86, 11, 24, 0.16)",
-    color: "#3B010B",
-    cursor: "pointer",
-  },
-
-  optionSelected: {
-    border: "1px solid #75162D",
-    background: "#F2E5C6",
-  },
-
-  optionCorrect: {
-    border: "1px solid #315B42",
-    background: "#EEF5EF",
-  },
-
-  optionWrong: {
-    border: "1px solid #8A2735",
-    background: "#FAEEEE",
-  },
-
-  optionLetter: {
-    width: "34px",
-    height: "34px",
-    minWidth: "34px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "1px solid rgba(86, 11, 24, 0.25)",
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "13px",
-    color: "#75162D",
-  },
-
-  optionText: {
-    fontSize: "14px",
-    lineHeight: 1.4,
-    flex: 1,
-  },
-
-  optionStatus: {
-    fontSize: "8px",
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    color: "#315B42",
-  },
-
-  optionStatusWrong: {
-    fontSize: "8px",
-    fontWeight: 700,
-    letterSpacing: "0.12em",
-    color: "#8A2735",
-  },
-
-  feedbackCorrect: {
-    marginTop: "20px",
-    padding: "20px 22px",
-    background: "#EEF5EF",
-    borderLeft: "4px solid #315B42",
-  },
-
-  feedbackWrong: {
-    marginTop: "20px",
-    padding: "20px 22px",
-    background: "#FAEEEE",
-    borderLeft: "4px solid #8A2735",
-  },
-
-  feedbackTitle: {
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    textTransform: "uppercase",
-    marginBottom: "7px",
-  },
-
-  nextButton: {
-    marginTop: "24px",
-    marginLeft: "auto",
-    border: "none",
-    background: "#560B18",
-    color: "#FFFDF8",
-    minHeight: "48px",
-    padding: "0 20px",
-    display: "flex",
-    alignItems: "center",
-    gap: "22px",
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.15em",
-    cursor: "pointer",
-  },
-
-  final: {
-    padding: "15px 0 5px",
-  },
-
-  finalHeader: {
-    maxWidth: "700px",
-  },
-
-  finalLine: {
-    width: "70px",
-    height: "2px",
-    background: "#75162D",
-    margin: "20px 0",
-  },
-
-  finalTitle: {
-    fontFamily:
-      "Georgia, 'Times New Roman', serif",
-    fontSize: "56px",
-    lineHeight: 0.95,
-    fontWeight: 500,
-    color: "#3B010B",
-    margin: 0,
-  },
-
-  scoreBox: {
-    marginTop: "42px",
-    padding: "28px",
-    border: "1px solid rgba(86, 11, 24, 0.18)",
-    background: "#F2E5C6",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "30px",
-  },
-
-  scoreLabel: {
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.2em",
-    color: "#75162D",
-  },
-
-  scoreDescription: {
-    fontSize: "13px",
-    color: "#665155",
-    margin: "7px 0 0",
-  },
-
-  score: {
-    display: "flex",
-    alignItems: "baseline",
-    color: "#560B18",
-  },
-
-  finalMessage: {
-    marginTop: "26px",
-    maxWidth: "700px",
-    borderLeft: "3px solid #75162D",
-    paddingLeft: "22px",
-  },
-
-  finalActions: {
-    marginTop: "34px",
-    display: "flex",
-    gap: "12px",
-    alignItems: "center",
-  },
-
-  secondaryButton: {
-    minHeight: "52px",
-    padding: "0 22px",
-    background: "transparent",
-    color: "#560B18",
-    border: "1px solid rgba(86, 11, 24, 0.3)",
-    fontSize: "10px",
-    fontWeight: 700,
-    letterSpacing: "0.14em",
-    cursor: "pointer",
-  },
-
-  footer: {
-    minHeight: "75px",
-    borderTop: "1px solid rgba(86, 11, 24, 0.2)",
-    display: "grid",
-    gridTemplateColumns: "1fr auto 1fr",
-    alignItems: "center",
-    gap: "20px",
-    color: "#80686C",
-    fontSize: "8px",
-    letterSpacing: "0.16em",
-  },
-
-  footerCenter: {
-    textAlign: "center",
-  },
-
-  loading: {
-    minHeight: "100vh",
-    background: "#F2E5C6",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#560B18",
-    fontFamily: "Arial, Helvetica, sans-serif",
-  },
-
-  loadingBox: {
-    width: "260px",
-    textAlign: "center",
-  },
-
-  loadingLine: {
-    width: "100%",
-    height: "2px",
-    background: "#75162D",
-    marginBottom: "18px",
-  },
-
-  loadingText: {
-    fontSize: "9px",
-    fontWeight: 700,
-    letterSpacing: "0.18em",
-    textTransform: "uppercase",
-  },
-};
+const styles = `
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    background: #F2E5C6;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-height: 100%;
+    background: #F2E5C6;
+    color: #3B010B;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  :global(button) {
+    font-family: inherit;
+  }
+
+  .page {
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    background: #F2E5C6;
+    padding: 28px 7vw 34px;
+  }
+
+  .topbar,
+  .hero,
+  .station,
+  .card,
+  footer {
+    width: min(1180px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(86, 11, 24, 0.18);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .mark {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: grid;
+    place-items: center;
+    background: #75162D;
+    color: #F2E5C6;
+    font: 700 25px Georgia, serif;
+  }
+
+  .brand-text {
+    min-width: 0;
+  }
+
+  .brand strong {
+    display: block;
+    color: #560B18;
+    font: 700 18px Georgia, serif;
+    letter-spacing: 0.13em;
+  }
+
+  .brand small {
+    display: block;
+    margin-top: 5px;
+    color: #75162D;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+
+  .back {
+    border: 0;
+    padding: 10px 0;
+    background: transparent;
+    color: #75162D;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    white-space: nowrap;
+  }
+
+  .hero {
+    margin-top: 68px;
+    margin-bottom: 45px;
+  }
+
+  .hero > span,
+  .card-head small,
+  .challenge small,
+  .procedure-head small,
+  .question-head small,
+  .result small,
+  .station small {
+    color: #75162D;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    margin: 12px 0 16px;
+    color: #3B010B;
+    font: 400 clamp(48px, 7vw, 84px) / 0.94 Georgia, serif;
+    letter-spacing: -0.045em;
+  }
+
+  .hero h1 em {
+    color: #75162D;
+    font-style: normal;
+  }
+
+  .hero p {
+    max-width: 650px;
+    margin: 0;
+    color: rgba(59, 1, 11, 0.68);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .station {
+    display: grid;
+    grid-template-columns: 155px minmax(0, 1fr);
+    border-top: 1px solid rgba(86, 11, 24, 0.18);
+    border-bottom: 1px solid rgba(86, 11, 24, 0.18);
+  }
+
+  .station > div {
+    min-width: 0;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .station > div:first-child {
+    border-right: 1px solid rgba(86, 11, 24, 0.18);
+  }
+
+  .station b {
+    font: 400 25px Georgia, serif;
+  }
+
+  .station strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font: 400 16px Georgia, serif;
+  }
+
+  .card {
+    margin-top: 14px;
+    padding: 40px;
+    background: rgba(255, 250, 236, 0.65);
+    border: 1px solid rgba(86, 11, 24, 0.17);
+    box-shadow: 0 18px 45px rgba(59, 1, 11, 0.07);
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid rgba(86, 11, 24, 0.15);
+  }
+
+  .card-head h2 {
+    margin: 9px 0 0;
+    color: #3B010B;
+    font: 400 clamp(29px, 4vw, 43px) / 1.06 Georgia, serif;
+    letter-spacing: -0.025em;
+  }
+
+  .number {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(117, 22, 45, 0.3);
+    color: #75162D;
+    font: 400 14px Georgia, serif;
+  }
+
+  .challenge {
+    padding: 30px 0 26px;
+  }
+
+  .challenge p,
+  .procedure p {
+    max-width: 880px;
+    margin: 11px 0 0;
+    font: 400 20px / 1.55 Georgia, serif;
+  }
+
+  .notice {
+    display: flex;
+    gap: 13px;
+    margin-bottom: 27px;
+    padding: 16px;
+    background: rgba(226, 217, 160, 0.3);
+    border-left: 3px solid #E2D9A0;
+  }
+
+  .notice i {
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #75162D;
+    border-radius: 50%;
+    color: #75162D;
+    font: 700 15px Georgia, serif;
+    font-style: normal;
+  }
+
+  .notice b {
+    font-size: 12px;
+  }
+
+  .notice p {
+    margin: 5px 0 0;
+    color: rgba(59, 1, 11, 0.7);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .primary {
+    width: auto;
+    min-height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 0 21px;
+    border: 1px solid #75162D;
+    background: #75162D;
+    color: #F2E5C6;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    transition: 0.15s ease;
+  }
+
+  .primary:hover {
+    background: #560B18;
+    transform: translateY(-1px);
+  }
+
+  .primary span {
+    font-size: 18px;
+  }
+
+  .procedure {
+    padding: 27px 0 29px;
+  }
+
+  .procedure-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .procedure-head b {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border: 1px solid rgba(117, 22, 45, 0.25);
+    color: #75162D;
+    font-size: 7px;
+    letter-spacing: 0.12em;
+  }
+
+  .divider {
+    height: 1px;
+    margin-bottom: 28px;
+    background: rgba(86, 11, 24, 0.15);
+    position: relative;
+  }
+
+  .divider span {
+    position: absolute;
+    top: -6px;
+    padding-right: 12px;
+    background: #FFF9EC;
+    color: #75162D;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+  }
+
+  .question-head h3 {
+    max-width: 850px;
+    margin: 10px 0 15px;
+    font: 400 24px / 1.35 Georgia, serif;
+  }
+
+  .progress {
+    height: 3px;
+    background: rgba(117, 22, 45, 0.12);
+  }
+
+  .progress span {
+    display: block;
+    height: 100%;
+    background: #75162D;
+    transition: width 0.2s;
+  }
+
+  .answers {
+    display: grid;
+    gap: 9px;
+    margin: 23px 0;
+  }
+
+  .answer {
+    width: 100%;
+    min-height: 57px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 9px 13px;
+    border: 1px solid rgba(86, 11, 24, 0.18);
+    background: rgba(255, 250, 236, 0.65);
+    color: #3B010B;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .answer:hover:not(:disabled),
+  .answer.chosen {
+    border-color: #75162D;
+    background: rgba(226, 217, 160, 0.3);
+  }
+
+  .answer.correct {
+    border-color: #75162D;
+    background: rgba(226, 217, 160, 0.42);
+  }
+
+  .answer.wrong {
+    border-color: #560B18;
+    background: rgba(117, 22, 45, 0.09);
+  }
+
+  .answer > b {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(117, 22, 45, 0.3);
+    color: #75162D;
+    font: 400 13px Georgia, serif;
+  }
+
+  .feedback {
+    margin-bottom: 22px;
+    padding: 15px;
+    border-left: 3px solid #75162D;
+    background: rgba(226, 217, 160, 0.22);
+  }
+
+  .feedback b {
+    font-size: 13px;
+  }
+
+  .feedback p {
+    margin: 5px 0 0;
+    color: rgba(59, 1, 11, 0.7);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .result {
+    padding: 38px 0 8px;
+    text-align: center;
+  }
+
+  .result > strong {
+    display: block;
+    margin: 9px 0;
+    color: #75162D;
+    font: 400 clamp(70px, 11vw, 120px) / 0.9 Georgia, serif;
+    letter-spacing: -0.06em;
+  }
+
+  .result h3 {
+    margin: 15px 0 7px;
+    font: 400 28px Georgia, serif;
+  }
+
+  .result p {
+    max-width: 500px;
+    margin: 0 auto 27px;
+    color: rgba(59, 1, 11, 0.68);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .result .primary {
+    margin: 0 auto;
+  }
+
+  footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 18px;
+    color: rgba(59, 1, 11, 0.5);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  footer b {
+    color: #75162D;
+    font: 700 12px Georgia, serif;
+  }
+
+  footer i {
+    height: 1px;
+    flex: 1;
+    background: rgba(86, 11, 24, 0.16);
+  }
+
+  .loading {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #F2E5C6;
+    color: #560B18;
+    font: 400 20px Georgia, serif;
+  }
+
+  /* TABLET */
+  @media (max-width: 900px) {
+    .page {
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+
+    .hero {
+      margin-top: 52px;
+      margin-bottom: 36px;
+    }
+
+    .hero h1 {
+      font-size: clamp(46px, 8vw, 68px);
+    }
+
+    .card {
+      padding: 30px;
+    }
+  }
+
+  /* CELULAR */
+  @media (max-width: 768px) {
+    .page {
+      width: 100%;
+      padding: 16px 14px 24px;
+    }
+
+    .topbar {
+      width: 100%;
+      gap: 12px;
+      padding-bottom: 15px;
+    }
+
+    .brand {
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 35px;
+      height: 35px;
+      flex-basis: 35px;
+      font-size: 20px;
+    }
+
+    .brand strong {
+      font-size: 14px;
+      letter-spacing: 0.09em;
+    }
+
+    .brand small {
+      margin-top: 3px;
+      font-size: 6px;
+      letter-spacing: 0.08em;
+    }
+
+    .back {
+      flex-shrink: 0;
+      font-size: 8px;
+      letter-spacing: 0.1em;
+    }
+
+    .hero {
+      margin-top: 39px;
+      margin-bottom: 28px;
+    }
+
+    .hero > span,
+    .card-head small,
+    .challenge small,
+    .procedure-head small,
+    .question-head small,
+    .result small,
+    .station small {
+      font-size: 8px;
+      letter-spacing: 0.13em;
+    }
+
+    .hero h1 {
+      width: 100%;
+      margin: 10px 0 15px;
+      font-size: clamp(38px, 12vw, 56px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      width: 100%;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .station {
+      width: 100%;
+      display: block;
+    }
+
+    .station > div {
+      width: 100%;
+      padding: 10px 13px;
+    }
+
+    .station > div:first-child {
+      border-right: 0;
+      border-bottom: 1px solid rgba(86, 11, 24, 0.18);
+    }
+
+    .station > div:last-child {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .station b {
+      font-size: 21px;
+    }
+
+    .station strong {
+      width: 100%;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .card {
+      width: 100%;
+      margin-top: 9px;
+      padding: 20px 15px;
+      box-shadow: 0 10px 25px rgba(59, 1, 11, 0.06);
+    }
+
+    .card-head {
+      gap: 10px;
+      padding-bottom: 19px;
+    }
+
+    .card-head > div:first-child {
+      min-width: 0;
+    }
+
+    .card-head h2 {
+      margin-top: 8px;
+      font-size: 27px;
+      line-height: 1.08;
+      overflow-wrap: anywhere;
+    }
+
+    .number {
+      width: 36px;
+      height: 36px;
+      flex-basis: 36px;
+      font-size: 11px;
+    }
+
+    .challenge {
+      padding: 21px 0 19px;
+    }
+
+    .challenge p,
+    .procedure p {
+      width: 100%;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .notice {
+      width: 100%;
+      gap: 10px;
+      margin-bottom: 19px;
+      padding: 13px;
+    }
+
+    .notice i {
+      width: 24px;
+      height: 24px;
+      flex-basis: 24px;
+    }
+
+    .notice b {
+      font-size: 11px;
+    }
+
+    .notice p {
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .primary {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 15px;
+      font-size: 9px;
+      letter-spacing: 0.11em;
+    }
+
+    .procedure {
+      padding: 21px 0 23px;
+    }
+
+    .procedure-head {
+      align-items: flex-start;
+    }
+
+    .procedure-head small {
+      max-width: 72%;
+      line-height: 1.4;
+    }
+
+    .procedure p {
+      margin-top: 12px;
+    }
+
+    .procedure-head b {
+      font-size: 6px;
+      padding: 5px 6px;
+    }
+
+    .divider {
+      margin-bottom: 25px;
+    }
+
+    .divider span {
+      font-size: 7px;
+    }
+
+    .question-head h3 {
+      width: 100%;
+      margin: 9px 0 14px;
+      font-size: 19px;
+      line-height: 1.35;
+    }
+
+    .answers {
+      gap: 8px;
+      margin: 19px 0;
+    }
+
+    .answer {
+      min-height: 55px;
+      padding: 9px 10px;
+      gap: 10px;
+      font-size: 12.5px;
+      line-height: 1.38;
+    }
+
+    .answer > b {
+      width: 28px;
+      height: 28px;
+      flex-basis: 28px;
+      font-size: 12px;
+    }
+
+    .feedback {
+      margin-bottom: 19px;
+      padding: 13px;
+    }
+
+    .feedback b {
+      font-size: 12px;
+    }
+
+    .feedback p {
+      font-size: 11px;
+    }
+
+    .result {
+      padding: 25px 0 5px;
+    }
+
+    .result > strong {
+      font-size: 78px;
+    }
+
+    .result h3 {
+      font-size: 23px;
+    }
+
+    .result p {
+      font-size: 12px;
+      margin-bottom: 22px;
+    }
+
+    footer {
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 7px 10px;
+      padding-top: 16px;
+      font-size: 7px;
+      line-height: 1.45;
+    }
+
+    footer i {
+      display: none;
+    }
+
+    footer span {
+      max-width: 100%;
+    }
+  }
+
+  /* CELULARES PEQUENOS */
+  @media (max-width: 390px) {
+    .page {
+      padding-left: 11px;
+      padding-right: 11px;
+    }
+
+    .brand small {
+      display: none;
+    }
+
+    .brand strong {
+      font-size: 13px;
+    }
+
+    .back {
+      font-size: 8px;
+    }
+
+    .hero {
+      margin-top: 34px;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+    }
+
+    .hero p {
+      font-size: 12.5px;
+    }
+
+    .station > div {
+      padding-left: 11px;
+      padding-right: 11px;
+    }
+
+    .card {
+      padding: 18px 13px;
+    }
+
+    .card-head h2 {
+      font-size: 24px;
+    }
+
+    .number {
+      width: 33px;
+      height: 33px;
+      flex-basis: 33px;
+    }
+
+    .challenge p,
+    .procedure p {
+      font-size: 15px;
+    }
+
+    .question-head h3 {
+      font-size: 18px;
+    }
+
+    .answer {
+      font-size: 12px;
+      min-height: 53px;
+    }
+
+    .primary {
+      min-height: 50px;
+      font-size: 8px;
+    }
+  }
+
+  /* CELULARES MUITO ESTREITOS */
+  @media (max-width: 340px) {
+    .page {
+      padding-left: 9px;
+      padding-right: 9px;
+    }
+
+    .topbar {
+      gap: 7px;
+    }
+
+    .mark {
+      width: 32px;
+      height: 32px;
+      flex-basis: 32px;
+      font-size: 18px;
+    }
+
+    .brand strong {
+      font-size: 12px;
+    }
+
+    .back {
+      font-size: 7px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+    }
+
+    .card {
+      padding-left: 11px;
+      padding-right: 11px;
+    }
+
+    .card-head h2 {
+      font-size: 22px;
+    }
+
+    .answer {
+      font-size: 11.5px;
+    }
+  }
+`;
